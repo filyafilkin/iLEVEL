@@ -1,6 +1,11 @@
 <template>
   <form class="autocomplete">
-    <label class="autocomplete__label" for="search">Country</label>
+    <label class="autocomplete__result" for="search">
+      You selected:
+      <span class="autocomplete__bold" v-if="selectedCountry">{{
+        selectedCountry
+      }}</span>
+    </label>
     <input
       class="autocomplete__input"
       type="text"
@@ -10,26 +15,17 @@
       autocomplete="off"
     />
 
-    <ul
-      class="autocomplete__list"
-      v-if="searchCountries.length"
-      ref="scrollContainer"
-    >
+    <ul class="autocomplete__list" v-if="searchCountries.length">
       <li
         class="autocomplete__item"
         v-for="country in searchCountries"
         :key="country.name"
         @click="selectCountry(country.name)"
         @keyup.enter="selectCountry(country.name)"
-        ref="options"
       >
         {{ country.name }}
       </li>
     </ul>
-    <p class="autocomplete__result" v-if="selectedCountry">
-      You have selected:
-      <span class="autocomplete__bold">{{ selectedCountry }}</span>
-    </p>
   </form>
 </template>
 
@@ -39,31 +35,6 @@ import countries from "@/data/countries.json";
 
 export default {
   name: "InputSearch",
-  data() {
-    return {
-      arrowCounter: 0,
-    };
-  },
-  methods: {
-    onArrowDown(ev) {
-      ev.preventDefault();
-      if (this.arrowCounter < this.results.length - 1) {
-        this.arrowCounter = this.arrowCounter + 1;
-        this.fixScrolling();
-      }
-    },
-    onArrowUp(ev) {
-      ev.preventDefault();
-      if (this.arrowCounter > 0) {
-        this.arrowCounter = this.arrowCounter - 1;
-        this.fixScrolling();
-      }
-    },
-    fixScrolling() {
-      const liH = this.$refs.options[this.arrowCounter].clientHeight;
-      this.$refs.scrollContainer.scrollTop = liH * this.arrowCounter;
-    },
-  },
   setup() {
     let searchTerm = ref("");
     const searchCountries = computed(() => {
@@ -120,21 +91,28 @@ export default {
   &__list {
     border: 1px solid gray;
     border-radius: 3px;
-    padding: 5px;
-    margin-bottom: 10px;
+    padding: 5px 5px 0 5px;
     max-height: 500px;
     overflow: auto;
   }
 
   &__item {
     margin-bottom: 5px;
+    &:hover {
+      color: red;
+    }
+    &:active {
+      color: red;
+    }
   }
 
   &__result {
+    margin-bottom: 10px;
   }
 
   &__bold {
     font-weight: 700;
+    color: red;
   }
 }
 </style>
