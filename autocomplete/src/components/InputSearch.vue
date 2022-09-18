@@ -1,11 +1,6 @@
 <template>
   <form class="autocomplete">
-    <label class="autocomplete__result" for="search">
-      You selected:
-      <span class="autocomplete__bold" v-if="selectedCountry">{{
-        selectedCountry
-      }}</span>
-    </label>
+    <label class="autocomplete__label" for="search"> Country: </label>
     <input
       class="autocomplete__input"
       type="text"
@@ -13,19 +8,19 @@
       placeholder="Type here.."
       v-model="searchTerm"
       autocomplete="off"
+      list="country"
     />
 
-    <ul class="autocomplete__list" v-if="searchCountries.length">
-      <li
-        class="autocomplete__item"
+    <datalist v-if="searchCountries.length" id="country">
+      <option
         v-for="country in searchCountries"
         :key="country.name"
         @click="selectCountry(country.name)"
         @keyup.enter="selectCountry(country.name)"
-      >
-        {{ country.name }}
-      </li>
-    </ul>
+        :value="country.name"
+      ></option>
+    </datalist>
+    <input type="reset" value="clear" />
   </form>
 </template>
 
@@ -35,6 +30,7 @@ import countries from "@/data/countries.json";
 
 export default {
   name: "InputSearch",
+  methods: {},
   setup() {
     let searchTerm = ref("");
     const searchCountries = computed(() => {
@@ -53,6 +49,10 @@ export default {
       selectedCountry.value = country;
       searchTerm.value = "";
     };
+    const clearInput = (country) => {
+      selectedCountry.value = country;
+      country = "";
+    };
     let selectedCountry = ref("");
     return {
       countries,
@@ -60,6 +60,7 @@ export default {
       searchCountries,
       selectCountry,
       selectedCountry,
+      clearInput,
     };
   },
 };
@@ -83,36 +84,10 @@ export default {
     border: 1px solid gray;
     border-radius: 3px;
     margin-bottom: 10px;
+
     &:focus {
       border: 1px solid red;
     }
-  }
-
-  &__list {
-    border: 1px solid gray;
-    border-radius: 3px;
-    padding: 5px 5px 0 5px;
-    max-height: 500px;
-    overflow: auto;
-  }
-
-  &__item {
-    margin-bottom: 5px;
-    &:hover {
-      color: red;
-    }
-    &:active {
-      color: red;
-    }
-  }
-
-  &__result {
-    margin-bottom: 10px;
-  }
-
-  &__bold {
-    font-weight: 700;
-    color: red;
   }
 }
 </style>
